@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: your-app-name               # 🔁 Replace with your actual Azure App Service name
-  AZURE_WEBAPP_PACKAGE_PATH: './publish'         # Folder where your app will be published
-  DOTNET_VERSION: '8.0.x'                        # Use 6.0.x or 7.0.x if needed
+  AZURE_WEBAPP_NAME: your-app-name               # 🔁 Replace with your Azure App Service name
+  AZURE_WEBAPP_PACKAGE_PATH: './publish'         # Output folder from dotnet publish
+  DOTNET_VERSION: '8.0.x'                        # LTS version
 
 permissions:
   contents: read
@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout source code
       uses: actions/checkout@v4
 
-    - name: Setup .NET Core SDK ${{ env.DOTNET_VERSION }}
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -29,13 +29,13 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build
+    - name: Build solution
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
+    - name: Run tests
       run: dotnet test --no-build --verbosity normal
 
-    - name: Publish
+    - name: Publish app
       run: dotnet publish --configuration Release --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
     - name: Upload artifact for deployment
@@ -54,7 +54,7 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-    - name: Download build artifact
+    - name: Download published artifact
       uses: actions/download-artifact@v4
       with:
         name: dotnet-app
