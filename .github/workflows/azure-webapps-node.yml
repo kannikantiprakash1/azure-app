@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: Newweeeeeebapp               # 🔁 Replace with your Azure App Service name
-  AZURE_WEBAPP_PACKAGE_PATH: './publish'         # Output folder from dotnet publish
-  DOTNET_VERSION: '8.0.x'                        # LTS version
+  AZURE_WEBAPP_NAME: Newweeeeeebapp               # Replace with your Azure App Service name
+  AZURE_WEBAPP_PACKAGE_PATH: './publish'          # Output folder from dotnet publish
+  DOTNET_VERSION: '8.0.x'                         # .NET SDK version
 
 permissions:
   contents: read
@@ -44,27 +44,5 @@ jobs:
         name: dotnet-app
         path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
- deploy:
-  permissions:
-    contents: none
-  runs-on: ubuntu-latest
-  needs: build
-  environment:
-    name: 'Development'
-    url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-  steps:
-  - name: Download build artifact
-    uses: actions/download-artifact@v4
-    with:
-      name: dotnet-app
-      path: ./publish   # 👈 IMPORTANT
-
-  - name: Deploy to Azure Web App
-    id: deploy-to-webapp
-    uses: azure/webapps-deploy@v2
-    with:
-      app-name: ${{ env.AZURE_WEBAPP_NAME }}
-      publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-      package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}   # = ./publish
-
+  deploy:
+    runs-on: ubunt
