@@ -30,7 +30,9 @@ jobs:
       run: dotnet build
 
     - name: Publish app
-      run: dotnet publish -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      run: |
+        rm -rf ./publish
+        dotnet publish -c Release -o ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
     - name: Upload artifact for deployment
       uses: actions/upload-artifact@v4
